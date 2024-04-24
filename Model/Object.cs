@@ -12,7 +12,7 @@ namespace KNN.Model
         public Type Type { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-        public double DistanceToCricle { get; private set; }
+        public double DistanceToCircle { get; private set; }
 
         public Object(int id, float x, float y, Type type) 
         {
@@ -22,9 +22,9 @@ namespace KNN.Model
             Type = type;
         }
 
-        public void CalculateDistanceToCricle(float X1, float Y1)
+        public void CalculateDistanceToCircle(float X1, float Y1)
         {
-            DistanceToCricle = Math.Sqrt(Math.Pow(this.X - X1, 2) + Math.Pow(this.Y - Y1,2));
+            DistanceToCircle = Math.Sqrt(Math.Pow(this.X - X1, 2) + Math.Pow(this.Y - Y1,2));
         }
     }
 }

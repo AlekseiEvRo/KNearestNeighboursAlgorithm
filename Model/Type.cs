@@ -10,6 +10,6 @@ namespace KNN.Model
     {
         Rectangle,
         Triangle,
-        Cricle
+        Circle
     }
 }

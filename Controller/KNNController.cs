@@ -9,10 +9,12 @@ namespace KNN.Controller
     internal class KNNController
     {
         List<Model.Object> objects;
+        List<Model.Object> nearObjects;
 
         public KNNController()
         {
             objects = new List<Model.Object>();
+            nearObjects = new List<Model.Object>();
         }
 
         public List<Model.Object> GetObjectsByType(Model.Type type)
@@ -38,16 +40,16 @@ namespace KNN.Controller
 
         public void CalculateDistances()
         {
-            var cricleLocation = objects.First(o => o.Type == Model.Type.Cricle);
+            var circleLocation = objects.First(o => o.Type == Model.Type.Circle);
             foreach(Model.Object obj in objects)
             {
-                obj.CalculateDistanceToCricle(cricleLocation.X, cricleLocation.Y);
+                obj.CalculateDistanceToCircle(circleLocation.X, circleLocation.Y);
             }
         }
 
-        public Model.Type CalculateCricleType(int k)
+        public Model.Type CalculatecircleType(int k)
         {
-            var nearObjects = objects.Where(o => o.Type != Model.Type.Cricle).OrderBy(o => o.DistanceToCricle).Take(k);
+            nearObjects = objects.Where(o => o.Type != Model.Type.Circle).OrderBy(o => o.DistanceToCircle).Take(k).ToList();
 
             var rectangleCount = nearObjects.Where(o => o.Type == Model.Type.Rectangle).Count();
             var triangleCount = nearObjects.Where(o => o.Type == Model.Type.Triangle).Count();
@@ -58,7 +60,12 @@ namespace KNN.Controller
             if (rectangleCount < triangleCount)
                 return Model.Type.Triangle;
 
-            return Model.Type.Cricle;
+            return Model.Type.Circle;
+        }
+
+        public List<Model.Object> GetNearObjects()
+        {
+            return nearObjects;
         }
     }
 }

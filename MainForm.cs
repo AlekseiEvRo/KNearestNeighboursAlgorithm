@@ -30,6 +30,7 @@ namespace KNN
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
             var id = _controller.GetNextObjectId();
+            ClearLines();
             if (e.Button == MouseButtons.Left)
             {
                 _controller.AddObject(new Model.Object(
@@ -54,20 +55,20 @@ namespace KNN
             }
             if (e.Button == MouseButtons.Middle)
             {
-                var cricles = _controller.GetObjectsByType(Model.Type.Cricle);
-                if (cricles.Count != 0)
+                var circles = _controller.GetObjectsByType(Model.Type.Circle);
+                if (circles.Count != 0)
                 {
-                    var cricle = cricles.First();
-                    Draw—ircle(new Point((int)cricle.X, (int)cricle.Y), _backgroundColor, _backgroundColor);
+                    var circle = circles.First();
+                    Draw—ircle(new Point((int)circle.X, (int)circle.Y), _backgroundColor, _backgroundColor);
                 }
 
-                _controller.RemoveObjectsByType(Model.Type.Cricle);
+                _controller.RemoveObjectsByType(Model.Type.Circle);
 
                 _controller.AddObject(new Model.Object(
                     id,
                     (float)e.X,
                     (float)e.Y,
-                    Model.Type.Cricle
+                    Model.Type.Circle
                     ));
 
                 Draw—ircle(e.Location, Color.Green, Color.Black);
@@ -160,21 +161,93 @@ namespace KNN
 
         private void CalculateButton_Click(object sender, EventArgs e)
         {
+            ClearLines();
+
             _controller.CalculateDistances();
 
-            Model.Type type = _controller.CalculateCricleType((int)NeighbourCounter.Value);
-            var cricle = _controller.GetObjectsByType(Model.Type.Cricle).First();
+            Model.Type type = _controller.CalculatecircleType((int)NeighbourCounter.Value);
+            var circle = _controller.GetObjectsByType(Model.Type.Circle).First();
+
             switch (type)
             {
                 case Model.Type.Rectangle:
-                    Draw—ircle(new Point((int)cricle.X, (int)cricle.Y), Color.Red, Color.Black);
+                    Draw—ircle(new Point((int)circle.X, (int)circle.Y), Color.Red, Color.Black);
                     break;
                 case Model.Type.Triangle:
-                    Draw—ircle(new Point((int)cricle.X, (int)cricle.Y), Color.Blue, Color.Black);
+                    Draw—ircle(new Point((int)circle.X, (int)circle.Y), Color.Blue, Color.Black);
                     break;
-                case Model.Type.Cricle:
-                    Draw—ircle(new Point((int)cricle.X, (int)cricle.Y), Color.Green, Color.Black);
+                case Model.Type.Circle:
+                    Draw—ircle(new Point((int)circle.X, (int)circle.Y), Color.Green, Color.Black);
                     break;
+            }
+
+            DrawLinesToNeighbours();
+        }
+
+        private void DrawLine(Point start, Point end, Color color)
+        {
+            using (Graphics g = Graphics.FromImage(pictureBox.Image))
+            {
+                var pen = new Pen(color);
+
+                g.DrawLine(pen, start, end);
+                
+                pen.Dispose();
+                pictureBox.Invalidate();
+            }
+        }
+
+        private void DrawLinesToNeighbours()
+        {
+            var nearestObjects = _controller.GetNearObjects();
+            var circle = _controller.GetObjectsByType(Model.Type.Circle).First();
+
+            var circlePos = new Point((int)circle.X, (int)circle.Y);
+
+            foreach (var obj in nearestObjects)
+            {
+                var objectPos = new Point((int)obj.X, (int)obj.Y);
+                DrawLine(circlePos, objectPos, Color.Black);
+            }
+        }
+
+        private void ClearLines()
+        {
+            var nearestObjects = _controller.GetNearObjects();
+            var circlesList = _controller.GetObjectsByType(Model.Type.Circle).ToList();
+            if (circlesList.Count == 0)
+                return;
+
+            var circle = circlesList.First();
+            var circlePos = new Point((int)circle.X, (int)circle.Y);
+
+            foreach (var obj in nearestObjects)
+            {
+                var objectPos = new Point((int)obj.X, (int)obj.Y);
+                DrawLine(circlePos, objectPos, _backgroundColor);
+            }
+            DrawAllObjects();
+        }
+
+        private void DrawAllObjects()
+        {
+            var rectangles = _controller.GetObjectsByType(Model.Type.Rectangle);
+            var triangles = _controller.GetObjectsByType(Model.Type.Triangle);
+            var circles = _controller.GetObjectsByType(Model.Type.Circle);
+
+            foreach (var triangle in triangles)
+            {
+                DrawTriangle(new Point((int)triangle.X, (int)triangle.Y), Color.Blue, Color.Black);
+            }
+
+            foreach (var rectangle in rectangles)
+            {
+                DrawRectangle(new Point((int)rectangle.X, (int)rectangle.Y), Color.Red, Color.Black);
+            }
+
+            foreach (var circle in circles)
+            {
+                Draw—ircle(new Point((int)circle.X, (int)circle.Y), Color.Green, Color.Black);
             }
         }
     }
